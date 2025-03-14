@@ -21,6 +21,7 @@ const FoodInformationSaverPage = () => {
                 <View>
                     <Button title="Save ingredient" onPress={() => {saveFoodInformation(name, category,  manuf, kcals, proteins, Fats, carbs)}}/>
                     <Button title="Save new category" onPress={() => {saveFoodCategory(category)}}/>
+                    <Button title="Delete category" onPress={() => {deleteFoodCategory(category)}}/>
                     <InputComp label="Name" labelColor={styles.labelColor} inputKeybordType="text" inputFunctio={newText => setName(newText)} inputValue={name}/>
                     <InputComp label="Category" labelColor={styles.labelColor} inputKeybordType="search" inputFunctio={newText => setCategory(newText)} inputValue={category}/>
                     <InputComp label="Manufacturer" labelColor={styles.labelColor} inputKeybordType="text" inputFunctio={newText => setManuf(newText)} inputValue={manuf}/>
@@ -43,10 +44,45 @@ function saveFoodInformation(name:string, category:string, manuF:string, kcals:s
     getData(ingredient.name+'_1');
 }
 
-function saveFoodCategory(category:string){
+const saveFoodCategory = async (category:string) =>{
     category = category.toLowerCase();
-    AsyncStorage.setItem(category + '_1',category);
+    let testMatch:boolean = false;
+    const keys = await AsyncStorage.getAllKeys();
+    const allKeys = await AsyncStorage.multiGet(keys);
+
+
+
+    for (let i = 0; i < allKeys.length; i++) {
+        if(allKeys[i][0].includes(category)){
+            console.log('löyty ' + allKeys[i]);
+            testMatch = true;
+        }
+    }
+
+    if( testMatch === false){
+        AsyncStorage.setItem(category + '_category',category);
+        console.log('Stored key');
+    }else {console.log('Key already exists');}
+
     console.log(AsyncStorage.getItem(category + '_1'));
+
+};
+
+const deleteFoodCategory = async(category:string) => {
+    category = category.toLowerCase();
+    category = category + '_category';
+    const keys = await AsyncStorage.getAllKeys();
+    const allKeys = await AsyncStorage.multiGet(keys);
+
+
+    for(let i = 0; i < allKeys.length; i++){
+        if(allKeys[i][0].includes(category)){
+            console.log(allKeys[i][0]);
+            await AsyncStorage.removeItem(category);
+        }
+    }
+    //await AsyncStorage.multiRemove(keys)
+    console.log(allKeys);
 }
 
 

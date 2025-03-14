@@ -1,7 +1,5 @@
 import React from 'react';
 import {
-
-  PermissionStatus,
   ScrollView,
   StatusBar,
   StyleSheet,
